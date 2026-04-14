@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import type { Bootcamp } from '@/content/types';
 import { useProgress } from '@/lib/progress';
 import ModuleCard from '@/components/ModuleCard';
-import ProgressRing from '@/components/ProgressRing';
+import { ProgressCircle } from '@/components/ui/progress-1';
 import { Separator } from '@/components/ui/separator';
 
 export default function Dashboard({ bootcamp }: { bootcamp: Bootcamp }) {
@@ -47,7 +47,9 @@ export default function Dashboard({ bootcamp }: { bootcamp: Bootcamp }) {
 
         {/* Resume / next action card — primary CTA */}
         <div className="bg-white border border-ink-200 rounded-xl shadow-card border-t-2 border-t-accent mb-10 p-8 flex items-center gap-8">
-          <ProgressRing value={overall} size={80} stroke={7} />
+          <ProgressCircle value={overall} size={80} strokeWidth={7}>
+              <span className="text-xs font-semibold text-ink-900">{overall}%</span>
+            </ProgressCircle>
           <div className="flex-1 min-w-0">
             <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-500 mb-1">
               {resume ? 'Resume where you left off' : 'Next up'}

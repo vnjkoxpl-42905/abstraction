@@ -1,7 +1,7 @@
 import { Link, Navigate, useParams } from 'react-router-dom';
 import type { Bootcamp } from '@/content/types';
 import { useProgress } from '@/lib/progress';
-import ProgressRing from '@/components/ProgressRing';
+import { ProgressCircle } from '@/components/ui/progress-1';
 
 export default function Complete({ bootcamp }: { bootcamp: Bootcamp }) {
   const { moduleSlug } = useParams();
@@ -27,7 +27,9 @@ export default function Complete({ bootcamp }: { bootcamp: Bootcamp }) {
       </header>
       <main className="mx-auto max-w-[760px] px-8 py-16">
         <div className="flex items-center gap-6 mb-10">
-          <ProgressRing value={score} size={96} stroke={7} />
+          <ProgressCircle value={score} size={96} strokeWidth={7}>
+            <span className="text-sm font-bold text-ink-900">{score}%</span>
+          </ProgressCircle>
           <div>
             <div className="text-[11px] uppercase tracking-[0.14em] text-ok mb-1">Complete</div>
             <h1 className="text-3xl font-semibold tracking-tight text-ink-900">
