@@ -23,11 +23,19 @@ export default function Dashboard({ bootcamp }: { bootcamp: Bootcamp }) {
 
   return (
     <div className="min-h-screen">
-      <AppHeader onReset={() => {
-        if (confirm('Reset all progress? This cannot be undone.')) resetAll();
-      }} />
+      {/* Thin top bar with reset action */}
+      <div className="border-b border-ink-200 h-14 flex items-center justify-end px-8">
+        <button
+          onClick={() => {
+            if (confirm('Reset all progress? This cannot be undone.')) resetAll();
+          }}
+          className="btn-ghost text-sm"
+        >
+          Reset progress
+        </button>
+      </div>
 
-      <main className="mx-auto max-w-[1100px] px-8 py-12">
+      <main className="max-w-[960px] px-8 py-12">
         {/* Bootcamp header */}
         <div className="mb-10">
           <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-500 mb-2">
@@ -83,31 +91,5 @@ export default function Dashboard({ bootcamp }: { bootcamp: Bootcamp }) {
         </div>
       </main>
     </div>
-  );
-}
-
-function AppHeader({ onReset }: { onReset: () => void }) {
-  return (
-    <header className="border-b border-ink-200 bg-white shadow-[0_1px_0_0_rgba(15,15,14,0.04)]">
-      <div className="mx-auto max-w-[1100px] flex items-center justify-between px-8 h-14">
-        <div className="flex items-center gap-2 text-ink-900">
-          <Logo />
-          <span className="font-semibold tracking-tight">Abstraction</span>
-        </div>
-        <button onClick={onReset} className="btn-ghost text-sm">
-          Reset progress
-        </button>
-      </div>
-    </header>
-  );
-}
-
-function Logo() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-      <rect x="2" y="2" width="18" height="18" rx="5" stroke="#0F0F0E" strokeWidth="1.5"/>
-      <path d="M7 14 L11 7 L15 14" stroke="#0F0F0E" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M8.5 11.5 H13.5" stroke="#0F0F0E" strokeWidth="1.5" strokeLinecap="round"/>
-    </svg>
   );
 }
