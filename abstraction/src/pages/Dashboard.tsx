@@ -3,6 +3,7 @@ import type { Bootcamp } from '@/content/types';
 import { useProgress } from '@/lib/progress';
 import ModuleCard from '@/components/ModuleCard';
 import ProgressRing from '@/components/ProgressRing';
+import { Separator } from '@/components/ui/separator';
 
 export default function Dashboard({ bootcamp }: { bootcamp: Bootcamp }) {
   const { state, getModule, resetAll } = useProgress(bootcamp);
@@ -22,22 +23,12 @@ export default function Dashboard({ bootcamp }: { bootcamp: Bootcamp }) {
 
   return (
     <div className="min-h-screen">
-      <header className="border-b border-ink-200 bg-white">
-        <div className="mx-auto max-w-[1100px] flex items-center justify-between px-8 h-14">
-          <div className="flex items-center gap-2 text-ink-900">
-            <Logo />
-            <span className="font-semibold tracking-tight">Abstraction</span>
-          </div>
-          <button
-            onClick={() => {
-              if (confirm('Reset all progress? This cannot be undone.')) resetAll();
-            }}
-            className="btn-ghost text-sm"
-          >Reset progress</button>
-        </div>
-      </header>
+      <AppHeader onReset={() => {
+        if (confirm('Reset all progress? This cannot be undone.')) resetAll();
+      }} />
 
       <main className="mx-auto max-w-[1100px] px-8 py-12">
+        {/* Bootcamp header */}
         <div className="mb-10">
           <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-500 mb-2">
             Bootcamp
@@ -46,14 +37,14 @@ export default function Dashboard({ bootcamp }: { bootcamp: Bootcamp }) {
           <p className="mt-3 text-ink-500 max-w-2xl leading-relaxed">{bootcamp.tagline}</p>
         </div>
 
-        {/* Resume / next action card */}
-        <div className="card p-6 mb-10 flex items-center gap-6">
-          <ProgressRing value={overall} size={72} stroke={6} />
-          <div className="flex-1">
+        {/* Resume / next action card — primary CTA */}
+        <div className="bg-white border border-ink-200 rounded-xl shadow-card border-t-2 border-t-accent mb-10 p-8 flex items-center gap-8">
+          <ProgressRing value={overall} size={80} stroke={7} />
+          <div className="flex-1 min-w-0">
             <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-500 mb-1">
               {resume ? 'Resume where you left off' : 'Next up'}
             </div>
-            <div className="text-lg font-semibold text-ink-900">
+            <div className="text-lg font-semibold text-ink-900 leading-snug">
               {next ? next.title : 'All modules complete — congratulations.'}
             </div>
             {next && (
@@ -67,19 +58,24 @@ export default function Dashboard({ bootcamp }: { bootcamp: Bootcamp }) {
                   ? `/m/${resume.moduleSlug}/${resume.sectionSlug}`
                   : `/m/${next.slug}`
               }
-              className="btn-primary"
+              className="btn-primary shrink-0"
             >
               {resume?.sectionSlug ? 'Resume' : 'Begin module'}
             </Link>
           )}
         </div>
 
-        <div className="mb-4 flex items-baseline justify-between">
-          <h2 className="text-[15px] font-semibold text-ink-900">Modules</h2>
-          <div className="text-[12px] text-ink-500 tabular-nums">
-            {doneSections} / {totalSections} sections
+        {/* Module grid */}
+        <div className="mb-5">
+          <div className="flex items-baseline justify-between mb-1">
+            <h2 className="text-[15px] font-semibold text-ink-900">Modules</h2>
+            <div className="text-[12px] font-mono text-ink-500 tabular-nums">
+              {doneSections} / {totalSections} sections
+            </div>
           </div>
+          <Separator className="mb-5" />
         </div>
+
         <div className="grid grid-cols-2 gap-4">
           {ordered.map(m => (
             <ModuleCard key={m.slug} module={m} progress={getModule(m.slug)} />
@@ -87,6 +83,22 @@ export default function Dashboard({ bootcamp }: { bootcamp: Bootcamp }) {
         </div>
       </main>
     </div>
+  );
+}
+
+function AppHeader({ onReset }: { onReset: () => void }) {
+  return (
+    <header className="border-b border-ink-200 bg-white shadow-[0_1px_0_0_rgba(15,15,14,0.04)]">
+      <div className="mx-auto max-w-[1100px] flex items-center justify-between px-8 h-14">
+        <div className="flex items-center gap-2 text-ink-900">
+          <Logo />
+          <span className="font-semibold tracking-tight">Abstraction</span>
+        </div>
+        <button onClick={onReset} className="btn-ghost text-sm">
+          Reset progress
+        </button>
+      </div>
+    </header>
   );
 }
 

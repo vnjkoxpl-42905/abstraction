@@ -33,6 +33,11 @@ export default {
         card: '0 1px 2px rgba(15,15,14,0.04), 0 1px 3px rgba(15,15,14,0.06)',
         pop: '0 4px 24px rgba(15,15,14,0.08)',
       },
+      borderRadius: {
+        lg: 'var(--radius)',
+        md: 'calc(var(--radius) - 2px)',
+        sm: 'calc(var(--radius) - 4px)',
+      },
     },
   },
   plugins: [],

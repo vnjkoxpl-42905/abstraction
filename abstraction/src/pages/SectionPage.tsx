@@ -37,7 +37,7 @@ export default function SectionPage({ bootcamp }: { bootcamp: Bootcamp }) {
   }
 
   return (
-    <SectionLayout module={module} section={section} sectionIndex={index}>
+    <SectionLayout module={module} section={section} sectionIndex={index} sectionsCompleted={mp.sectionsCompleted}>
       <Markdown source={section.body} />
       {section.callout && <Callout {...section.callout} />}
       {section.checkpoint && (
