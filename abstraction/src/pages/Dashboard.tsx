@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { Bootcamp } from '@/content/types';
 import { useProgress } from '@/lib/progress';
 import ModuleCard from '@/components/ModuleCard';
@@ -28,6 +28,7 @@ function useBentoKeyframes() {
       @keyframes bento2-drift { 0%,100%{transform:translate3d(0,0,0)} 50%{transform:translate3d(6%,-6%,0)} }
       @keyframes bento2-glow  { 0%,100%{opacity:.6;filter:drop-shadow(0 0 0 rgba(0,0,0,.4))} 50%{opacity:1;filter:drop-shadow(0 0 6px rgba(0,0,0,.2))} }
       @keyframes bento2-card  { 0%{opacity:0;transform:translate3d(0,18px,0) scale(.96)} 100%{opacity:1;transform:translate3d(0,0,0) scale(1)} }
+      @keyframes fade-up      { 0%{opacity:0;transform:translate3d(0,20px,0)} 100%{opacity:1;transform:translate3d(0,0,0)} }
     `;
     document.head.appendChild(style);
     return () => { style.remove(); };
@@ -52,6 +53,21 @@ export default function Dashboard({ bootcamp }: { bootcamp: Bootcamp }) {
 
   const resume = state.lastVisited;
 
+  // Scroll-triggered grid entrance
+  const [gridVisible, setGridVisible] = useState(false);
+  const gridRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const node = gridRef.current;
+    if (!node) return;
+    const obs = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) { setGridVisible(true); obs.disconnect(); } },
+      { threshold: 0.1 }
+    );
+    obs.observe(node);
+    return () => obs.disconnect();
+  }, []);
+
   return (
     <div className="min-h-screen">
       {/* Thin top bar */}
@@ -65,8 +81,11 @@ export default function Dashboard({ bootcamp }: { bootcamp: Bootcamp }) {
       </div>
 
       <main className="max-w-[960px] px-8 py-12">
-        {/* Bootcamp header */}
-        <div className="mb-10">
+        {/* Bootcamp header — fade-up entrance */}
+        <div
+          className="mb-10 motion-safe:opacity-0 motion-safe:animate-[fade-up_0.6s_ease-out_forwards]"
+          style={{ animationDelay: '0s' }}
+        >
           <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-500 mb-2">
             Bootcamp
           </div>
@@ -74,8 +93,11 @@ export default function Dashboard({ bootcamp }: { bootcamp: Bootcamp }) {
           <p className="mt-3 text-ink-500 max-w-2xl leading-relaxed">{bootcamp.tagline}</p>
         </div>
 
-        {/* Resume / next action card */}
-        <div className="bg-white border border-ink-200 rounded-xl shadow-card border-t-2 border-t-accent mb-10 p-8 flex items-center gap-8">
+        {/* Resume / next action card — fade-up + hover shadow */}
+        <div
+          className="bg-white border border-ink-200 rounded-xl shadow-card border-t-2 border-t-accent mb-10 p-8 flex items-center gap-8 transition-shadow duration-300 hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] motion-safe:opacity-0 motion-safe:animate-[fade-up_0.6s_ease-out_forwards]"
+          style={{ animationDelay: '0.15s' }}
+        >
           <ProgressCircle value={overall} size={80} strokeWidth={7}>
             <span className="text-xs font-semibold text-ink-900">{overall}%</span>
           </ProgressCircle>
@@ -102,8 +124,11 @@ export default function Dashboard({ bootcamp }: { bootcamp: Bootcamp }) {
           )}
         </div>
 
-        {/* Module bento grid */}
-        <div className="mb-5">
+        {/* Module label row — fade-up */}
+        <div
+          className="mb-5 motion-safe:opacity-0 motion-safe:animate-[fade-up_0.6s_ease-out_forwards]"
+          style={{ animationDelay: '0.28s' }}
+        >
           <div className="flex items-baseline justify-between mb-1">
             <h2 className="text-[15px] font-semibold text-ink-900">Modules</h2>
             <div className="text-[12px] font-mono text-ink-500 tabular-nums">
@@ -113,7 +138,11 @@ export default function Dashboard({ bootcamp }: { bootcamp: Bootcamp }) {
           <Separator className="mb-5" />
         </div>
 
-        <div className="grid grid-cols-1 gap-3 md:auto-rows-[minmax(140px,auto)] md:grid-cols-6">
+        {/* Bento grid — scroll-triggered cascade */}
+        <div
+          ref={gridRef}
+          className="grid grid-cols-1 gap-3 md:auto-rows-[minmax(140px,auto)] md:grid-cols-6"
+        >
           {ordered.map((m, i) => (
             <ModuleCard
               key={m.slug}
@@ -121,7 +150,7 @@ export default function Dashboard({ bootcamp }: { bootcamp: Bootcamp }) {
               progress={getModule(m.slug)}
               span={BENTO_SPANS[i] ?? ''}
               animationDelay={`${i * 0.12}s`}
-              isVisible={true}
+              isVisible={gridVisible}
             />
           ))}
         </div>

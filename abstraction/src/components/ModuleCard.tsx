@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { BookOpen, Eye, HelpCircle, Network, Zap, Lock, CheckCircle2 } from 'lucide-react';
 import type { Module } from '@/content/types';
@@ -41,16 +42,35 @@ export default function ModuleCard({ module, progress, span = '', animationDelay
   const animation = MODULE_ANIMATIONS[iconIdx];
   const meta = statusMeta[status];
 
+  // Cursor spotlight
+  const cardRef = useRef<HTMLElement>(null);
+  const handleMouseMove = (e: React.MouseEvent) => {
+    const rect = cardRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    cardRef.current?.style.setProperty('--x', `${x}%`);
+    cardRef.current?.style.setProperty('--y', `${y}%`);
+  };
+
   const card = (
     <article
+      ref={cardRef}
+      onMouseMove={handleMouseMove}
       className={cn(
         'group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl',
         'border border-neutral-900/10 bg-white/80 p-5',
         'shadow-[0_10px_40px_rgba(0,0,0,0.04)]',
-        'transition-transform duration-300 ease-out',
+        'transition-all duration-300 ease-out',
         'motion-safe:opacity-0',
         isVisible && 'motion-safe:animate-[bento2-card_0.8s_ease-out_forwards]',
-        !locked && 'hover:-translate-y-1 hover:shadow-[0_20px_60px_rgba(0,0,0,0.08)] cursor-pointer',
+        !locked && [
+          'hover:scale-[1.02]',
+          'hover:-translate-y-1',
+          'hover:border-neutral-900/25',
+          'hover:shadow-[0_20px_60px_rgba(0,0,0,0.08)]',
+          'cursor-pointer',
+        ],
         locked && 'opacity-60',
         span,
       )}
@@ -73,7 +93,9 @@ export default function ModuleCard({ module, progress, span = '', animationDelay
       <div className="flex items-start gap-4">
         <div className={cn(
           'flex h-12 w-12 shrink-0 items-center justify-center rounded-full border bg-white',
+          'transition-all duration-300',
           completed ? 'border-green-200' : 'border-neutral-900/15',
+          !locked && !completed && 'group-hover:border-neutral-900/30 group-hover:shadow-sm',
         )}>
           {completed ? (
             <CheckCircle2 className="h-6 w-6 text-green-500" strokeWidth={1.5} />
@@ -124,14 +146,14 @@ export default function ModuleCard({ module, progress, span = '', animationDelay
         </span>
       </div>
 
-      {/* Hover outline effect */}
+      {/* Cursor spotlight overlay */}
       {!locked && (
         <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
           <div
             className="absolute inset-0 rounded-2xl border border-neutral-900/10"
             style={{
-              maskImage: 'radial-gradient(220px_220px_at_var(--x,50%)_var(--y,50%), black, transparent)',
-              WebkitMaskImage: 'radial-gradient(220px_220px_at_var(--x,50%)_var(--y,50%), black, transparent)',
+              maskImage: 'radial-gradient(220px 220px at var(--x, 50%) var(--y, 50%), black, transparent)',
+              WebkitMaskImage: 'radial-gradient(220px 220px at var(--x, 50%) var(--y, 50%), black, transparent)',
             }}
           />
         </div>
